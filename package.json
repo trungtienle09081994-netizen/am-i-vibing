@@ -20,6 +20,7 @@
 	},
 	"packageManager": "pnpm@10.13.1",
 	"dependencies": {
-		"tsup": "^8.5.0"
+		"tsup": "^8.5.0",
+		"tsx": "^4.20.3"
 	}
 }
