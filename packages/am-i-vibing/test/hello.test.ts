@@ -28,7 +28,7 @@ describe("providers", () => {
   it("should include Bolt.new providers", () => {
     const bolt = providers.find((p) => p.name === "Bolt.new");
     const boltAgent = providers.find((p) => p.name === "Bolt.new Agent");
-    
+
     expect(bolt).toBeDefined();
     expect(bolt?.type).toBe("interactive");
     expect(boltAgent).toBeDefined();

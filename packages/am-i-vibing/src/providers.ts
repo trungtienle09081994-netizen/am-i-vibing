@@ -73,10 +73,7 @@ export const providers: ProviderConfig[] = [
     envVars: [],
     envVarGroups: [
       {
-        all: [
-          ["SHELL", "/bin/jsh"],
-          "npm_config_yes",
-        ],
+        all: [["SHELL", "/bin/jsh"], "npm_config_yes"],
       },
     ],
   },
