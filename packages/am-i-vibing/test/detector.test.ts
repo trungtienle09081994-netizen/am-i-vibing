@@ -136,6 +136,27 @@ describe("detectAgenticEnvironment", () => {
     expect(result.type).toBe("interactive");
   });
 
+  it("should detect Zed Agent environment", () => {
+    const testEnv = {
+      TERM_PROGRAM: "zed",
+      PAGER: "cat",
+    };
+    const result = detectAgenticEnvironment(testEnv);
+
+    expect(result.isAgentic).toBe(true);
+    expect(result.provider).toBe("Zed Agent");
+    expect(result.type).toBe("agent");
+  });
+
+  it("should detect Zed interactive environment", () => {
+    const testEnv = { TERM_PROGRAM: "zed" };
+    const result = detectAgenticEnvironment(testEnv);
+
+    expect(result.isAgentic).toBe(true);
+    expect(result.provider).toBe("Zed");
+    expect(result.type).toBe("interactive");
+  });
+
   it("should handle false positive scenarios", () => {
     const testEnv = { RANDOM_VARIABLE: "some-value" };
     const result = detectAgenticEnvironment(testEnv);
@@ -162,7 +183,24 @@ describe("detectAgenticEnvironment", () => {
     expect(result2.type).toBe("interactive");
   });
 
+  it("should distinguish between Zed agent and interactive variants", () => {
+    // Test that Zed Agent is detected before regular Zed
+    const agentEnv = {
+      TERM_PROGRAM: "zed",
+      PAGER: "cat",
+    };
+    const result = detectAgenticEnvironment(agentEnv);
 
+    expect(result.provider).toBe("Zed Agent");
+    expect(result.type).toBe("agent");
+
+    // Test regular Zed
+    const interactiveEnv = { TERM_PROGRAM: "zed" };
+    const result2 = detectAgenticEnvironment(interactiveEnv);
+
+    expect(result2.provider).toBe("Zed");
+    expect(result2.type).toBe("interactive");
+  });
 });
 
 describe("convenience functions", () => {

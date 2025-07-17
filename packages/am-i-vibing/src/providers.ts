@@ -89,6 +89,32 @@ export const providers: ProviderConfig[] = [
       },
     ],
   },
+  {
+    id: "zed-agent",
+    name: "Zed Agent",
+    type: "agent",
+    envVars: [],
+    envVarGroups: [
+      {
+        all: [
+          ["TERM_PROGRAM", "zed"],
+          ["PAGER", "cat"],
+        ],
+      },
+    ],
+  },
+  {
+    id: "zed",
+    name: "Zed",
+    type: "interactive",
+    envVars: [],
+    envVarGroups: [
+      {
+        all: [["TERM_PROGRAM", "zed"]],
+        none: [["PAGER", "cat"]],
+      },
+    ],
+  },
 ];
 
 /**
