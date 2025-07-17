@@ -51,40 +51,41 @@ pnpm run dev
 
 ### Monorepo Structure
 - `packages/am-i-vibing/` - Main library package for agentic environment detection
-- `demos/` - Demo applications that consume the library
-- Root workspace coordinates builds, tests, and releases across all packages
+- Root workspace coordinates builds, tests, and releases
 
 ### Library Architecture (am-i-vibing)
-- **Core Detection**: `src/detector.ts` - Main detection logic and confidence scoring
+- **Core Detection**: `src/detector.ts` - Main detection logic with simplified implementation
 - **Provider Definitions**: `src/providers.ts` - Configuration for each AI tool
 - **Type System**: `src/types.ts` - TypeScript interfaces and types
+- **CLI Interface**: `src/cli.ts` - Command-line interface for npx execution
 - **Detection Methods**:
   - Environment variable detection (string and name/value tuples)
-  - Process tree analysis
+  - Process tree analysis using process-ancestry
   - Custom filesystem-based detectors
-  - Multi-layered confidence scoring
+  - Logical operators (ANY/ALL/NONE) for complex conditions
 
 ### Key Features
 - **Provider Detection**: Supports 10+ major AI coding tools
 - **Detection Categories**: Direct agents, embedded IDE features, hybrid tools
-- **Evidence Classification**: Active usage vs installation vs environment
-- **Confidence Scoring**: Weighted scoring based on evidence quality
+- **CLI Tool**: Available via `npx am-i-vibing` with multiple output formats
 - **Tuple-based Detection**: Validates both variable names and expected values
+- **Simplified API**: Returns `id`, `name`, and `type` for detected providers
 
 ## Supported AI Tools
 
 ### Direct Agents (Full CLI control)
-- **Claude Code**: `CLAUDECODE`, `CLAUDE_CODE_ENTRYPOINT`, `CLAUDE_CODE_SSE_PORT`
-- **Replit AI**: `REPL_ID`, `REPL_OWNER`, `REPL_SLUG`, `REPL_LANGUAGE`, etc.
-- **Aider**: `AIDER_API_KEY`, `AIDER_MODEL`, `AIDER_AUTO_COMMITS`, etc.
+- **Claude Code**: `CLAUDECODE`
+- **Replit AI**: `REPL_ID` with various modes
+- **Aider**: `AIDER_API_KEY` with process detection
+- **Bolt.new**: `SHELL=/bin/jsh` with specific npm config
+- **Zed Agent**: `TERM_PROGRAM=zed` + `PAGER=cat`
 
 ### Embedded IDE Features
-- **Cursor**: `TERM_PROGRAM=cursor`, `EDITOR=cursor`
-- **GitHub Copilot**: VS Code environment detection
-- **Windsurf/Codeium**: Config file detection (`~/.codeium/windsurf/`)
-- **Continue.dev**: Config file detection (`~/.continue/`)
-- **Tabnine**: Process-based detection
-- **JetBrains AI**: IDE environment detection
+- **Cursor**: `CURSOR_TRACE_ID` (interactive and agent variants)
+- **GitHub Copilot**: `TERM_PROGRAM=vscode` + `GIT_PAGER=cat`
+- **Zed**: `TERM_PROGRAM=zed` (interactive mode)
+- **Gemini Agent**: Process-based detection
+- **OpenAI Codex**: Process-based detection
 
 ### Environment Variable Types
 - **String**: Simple presence check (`'CLAUDECODE'`)
@@ -93,18 +94,42 @@ pnpm run dev
 
 ## Usage Examples
 
+### CLI Usage
+```bash
+# Basic detection
+npx am-i-vibing
+# ✓ Detected: Claude Code (agent)
+
+# JSON output
+npx am-i-vibing --format json
+# {"isAgentic": true, "id": "claude-code", "name": "Claude Code", "type": "agent"}
+
+# Check specific environment type
+npx am-i-vibing --check agent
+# ✓ Running in agent environment: Claude Code
+
+# Quiet mode (useful for scripts)
+npx am-i-vibing --quiet
+# Claude Code
+```
+
+### Library Usage
 ```typescript
-import { detectAgenticEnvironment, isDirectAgent } from 'am-i-vibing';
+import { detectAgenticEnvironment, isAgent, isInteractive } from 'am-i-vibing';
 
 // Full detection
 const result = detectAgenticEnvironment();
-console.log(`Detected: ${result.provider} (${result.type})`);
-console.log(`Confidence: ${result.confidence}`);
-console.log(`Capabilities: ${result.capabilities.join(', ')}`);
+console.log(`Detected: ${result.name} (${result.type})`);
+console.log(`ID: ${result.id}`);
+console.log(`Is agentic: ${result.isAgentic}`);
 
 // Quick checks
-if (isDirectAgent()) {
+if (isAgent()) {
   console.log('Running under direct AI agent control');
+}
+
+if (isInteractive()) {
+  console.log('Running in interactive AI environment');
 }
 ```
 
@@ -119,14 +144,15 @@ if (isDirectAgent()) {
 
 ### Testing Strategy
 - Test environment variable detection (strings and tuples)
-- Test confidence scoring across evidence types
+- Test logical operators (ANY/ALL/NONE) combinations
 - Test false positive scenarios
+- Test CLI functionality with different arguments
 - Mock filesystem operations in custom detectors
 
-### Evidence Quality Hierarchy
-1. **Active Evidence**: Tuples, session variables, specific indicators
-2. **Installation Evidence**: API keys, tokens, generic credentials
-3. **Environment Evidence**: IDE processes, generic environment vars
+### Build and Packaging
+- Build targets both library (`src/index.ts`) and CLI (`src/cli.ts`)
+- CLI is executable via `npx am-i-vibing` after npm publication
+- ESM-only with proper shebang preservation for CLI
 
 ## Release Process
 
@@ -149,7 +175,6 @@ Three GitHub Actions workflows:
 
 ### Package Naming
 - Main library: `am-i-vibing`
-- Demo packages: `@demo/package-name` (private)
 
 ### TypeScript Configuration
 - ES2022 target with strict mode

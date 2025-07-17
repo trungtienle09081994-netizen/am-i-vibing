@@ -1,3 +1,1 @@
-## Library template
-
-This is a template for a library monorepo.
+packages/am-i-vibing/README.md
