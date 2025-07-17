@@ -5,7 +5,7 @@ import type {
   EnvVarGroup,
 } from "./types.js";
 import { providers } from "./providers.js";
-import getProcessAncestry from "process-ancestry";
+import { getProcessAncestry } from "process-ancestry";
 
 /**
  * Check if a specific environment variable exists (handles both strings and tuples)
@@ -56,7 +56,6 @@ function checkProcess(processName: string): boolean {
 
     // Use process-ancestry to check the process tree
     const ancestry = getProcessAncestry();
-    console.log("Process ancestry:", ancestry);
     for (const ancestorProcess of ancestry) {
       if (ancestorProcess.command?.includes(processName)) {
         return true;

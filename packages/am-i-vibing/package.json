@@ -28,10 +28,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+github.com:matt/am-i-vibing.git",
+    "url": "git+github.com:ascorbic/am-i-vibing.git",
     "directory": "packages/am-i-vibing"
   },
-  "homepage": "https://github.com/matt/am-i-vibing",
+  "homepage": "https://github.com/ascorbic/am-i-vibing",
   "keywords": [
     "ai",
     "agentic",
@@ -43,6 +43,6 @@
   "author": "Matt Kane",
   "license": "MIT",
   "dependencies": {
-    "process-ancestry": "^0.0.1"
+    "process-ancestry": "^0.0.2"
   }
 }

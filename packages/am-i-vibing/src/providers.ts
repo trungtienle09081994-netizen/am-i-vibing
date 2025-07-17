@@ -28,39 +28,12 @@ export const providers: ProviderConfig[] = [
     envVars: ["CURSOR_TRACE_ID"],
   },
   {
-    id: "github-copilot-agent",
-    name: "GitHub Copilot Agent",
-    type: "agent",
-    envVars: [],
-    envVarGroups: [
-      {
-        all: [
-          ["TERM_PROGRAM", "vscode"],
-          ["GIT_PAGER", "cat"],
-        ],
-      },
-    ],
-  },
-  {
-    id: "github-copilot",
-    name: "GitHub Copilot",
-    type: "interactive",
-    envVars: [],
-    envVarGroups: [
-      {
-        all: [["TERM_PROGRAM", "vscode"], "VSCODE_GIT_ASKPASS_NODE"],
-        none: ["CURSOR_TRACE_ID"],
-      },
-    ],
-  },
-  {
     id: "gemini-agent",
     name: "Gemini Agent",
     type: "agent",
     envVars: [],
     processChecks: ["gemini"],
   },
-
   {
     id: "replit",
     name: "Replit",
@@ -123,6 +96,43 @@ export const providers: ProviderConfig[] = [
       },
     ],
   },
+  {
+    id: "replit-assistant",
+    name: "Replit Assistant",
+    type: "agent",
+    envVars: [],
+    envVarGroups: [
+      {
+        all: ["REPL_ID", ["REPLIT_MODE", "assistant"]],
+      },
+    ],
+  },
+  {
+    id: "replit",
+    name: "Replit",
+    type: "interactive",
+    envVars: [],
+    envVarGroups: [
+      {
+        all: ["REPL_ID"],
+        none: [["REPLIT_MODE", "assistant"]],
+      },
+    ],
+  },
+  {
+    id: "github-copilot-agent",
+    name: "VS Code Copilot",
+    type: "agent",
+    envVars: [],
+    envVarGroups: [
+      {
+        all: [
+          ["TERM_PROGRAM", "vscode"],
+          ["GIT_PAGER", "cat"],
+        ],
+      },
+    ],
+  },
 ];
 
 /**
@@ -136,7 +146,7 @@ export function getProvider(name: string): ProviderConfig | undefined {
  * Get all providers of a specific type
  */
 export function getProvidersByType(
-  type: "agent" | "interactive" | "hybrid",
+  type: "agent" | "interactive",
 ): ProviderConfig[] {
   return providers.filter((p) => p.type === type);
 }
