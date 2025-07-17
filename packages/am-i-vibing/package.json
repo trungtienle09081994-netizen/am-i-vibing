@@ -24,7 +24,7 @@
     "publint": "^0.3.12",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3",
-    "vitest": "^2.0.0"
+    "vitest": "^3.2.4"
   },
   "repository": {
     "type": "git",
