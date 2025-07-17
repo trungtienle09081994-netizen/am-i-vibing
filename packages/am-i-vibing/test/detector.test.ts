@@ -41,7 +41,6 @@ describe("detectAgenticEnvironment", () => {
     expect(result.isAgentic).toBe(false);
     expect(result.provider).toBeNull();
     expect(result.type).toBeNull();
-    expect(result.evidence).toHaveLength(0);
   });
 
   it("should detect Claude Code environment", () => {
@@ -51,7 +50,6 @@ describe("detectAgenticEnvironment", () => {
     expect(result.isAgentic).toBe(true);
     expect(result.provider).toBe("Claude Code");
     expect(result.type).toBe("agent");
-    expect(result.evidence.length).toBeGreaterThan(0);
   });
 
   it("should detect Cursor environment", () => {
@@ -164,13 +162,7 @@ describe("detectAgenticEnvironment", () => {
     expect(result2.type).toBe("interactive");
   });
 
-  it("should include metadata in results", () => {
-    const result = detectAgenticEnvironment({});
 
-    expect(result.metadata).toBeDefined();
-    expect(result.metadata.totalProvidersChecked).toBeGreaterThan(0);
-    expect(result.metadata.detectionTimestamp).toBeDefined();
-  });
 });
 
 describe("convenience functions", () => {

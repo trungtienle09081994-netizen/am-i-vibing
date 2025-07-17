@@ -6,7 +6,6 @@
 export type {
   AgenticType,
   ProviderConfig,
-  DetectionEvidence,
   DetectionResult,
 } from "./types.js";
 

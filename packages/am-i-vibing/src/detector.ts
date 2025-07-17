@@ -1,6 +1,5 @@
 import type {
   DetectionResult,
-  DetectionEvidence,
   ProviderConfig,
   EnvVarDefinition,
   EnvVarGroup,
@@ -13,7 +12,7 @@ import { providers } from "./providers.js";
 function checkEnvVar(
   envVarDef: EnvVarDefinition,
   env: Record<string, string | undefined> = process.env,
-): DetectionEvidence | null {
+): boolean {
   let envVar: string;
   let expectedValue: string | undefined;
 
@@ -29,34 +28,21 @@ function checkEnvVar(
 
   // Check if environment variable exists
   if (!actualValue) {
-    return null;
+    return false;
   }
 
   // If we have an expected value, check if it matches
   if (expectedValue && actualValue !== expectedValue) {
-    return null;
+    return false;
   }
 
-  const displayValue = expectedValue
-    ? `${envVar}=${expectedValue}`
-    : envVar.toLowerCase().includes("key") ||
-        envVar.toLowerCase().includes("token")
-      ? "[REDACTED]"
-      : actualValue;
-
-  return {
-    type: "env_var",
-    description: expectedValue
-      ? `Environment variable ${envVar} is set to ${expectedValue}`
-      : `Environment variable ${envVar} is set`,
-    value: displayValue,
-  };
+  return true;
 }
 
 /**
  * Check if a process is running in the process tree
  */
-function checkProcess(processName: string): DetectionEvidence | null {
+function checkProcess(processName: string): boolean {
   try {
     // Simple process check - in a real implementation, you'd want to
     // traverse the process tree more thoroughly
@@ -65,23 +51,12 @@ function checkProcess(processName: string): DetectionEvidence | null {
       process.title?.includes(processName) ||
       process.env.npm_lifecycle_script?.includes(processName)
     ) {
-      // AI-specific processes are more likely to indicate active usage
-      const isAiProcess =
-        processName.includes("ai") ||
-        processName.includes("copilot") ||
-        processName.includes("claude") ||
-        processName.includes("aider");
-
-      return {
-        type: "process",
-        description: `Process ${processName} detected`,
-        value: processName,
-      };
+      return true;
     }
   } catch (error) {
     // Ignore process check errors
   }
-  return null;
+  return false;
 }
 
 /**
@@ -90,19 +65,16 @@ function checkProcess(processName: string): DetectionEvidence | null {
 function checkEnvVarGroup(
   group: EnvVarGroup,
   env: Record<string, string | undefined> = process.env,
-): DetectionEvidence | null {
-  const results: { type: string; passed: boolean; details: string[] }[] = [];
+): boolean {
+  const results: { type: string; passed: boolean }[] = [];
 
   // Check ANY conditions (OR logic)
   if (group.any && group.any.length > 0) {
     let anyPassed = false;
-    const anyDetails: string[] = [];
 
     for (const envVarDef of group.any) {
-      const evidence = checkEnvVar(envVarDef, env);
-      if (evidence) {
+      if (checkEnvVar(envVarDef, env)) {
         anyPassed = true;
-        anyDetails.push(evidence.value || "set");
         break; // Only need one to pass for ANY
       }
     }
@@ -110,28 +82,23 @@ function checkEnvVarGroup(
     results.push({
       type: "any",
       passed: anyPassed,
-      details: anyDetails,
     });
   }
 
   // Check ALL conditions (AND logic)
   if (group.all && group.all.length > 0) {
     let allPassed = true;
-    const allDetails: string[] = [];
 
     for (const envVarDef of group.all) {
-      const evidence = checkEnvVar(envVarDef, env);
-      if (!evidence) {
+      if (!checkEnvVar(envVarDef, env)) {
         allPassed = false;
         break;
       }
-      allDetails.push(evidence.value || "set");
     }
 
     results.push({
       type: "all",
       passed: allPassed,
-      details: allDetails,
     });
   }
 
@@ -140,8 +107,7 @@ function checkEnvVarGroup(
     let nonePassed = true;
 
     for (const envVarDef of group.none) {
-      const evidence = checkEnvVar(envVarDef, env);
-      if (evidence) {
+      if (checkEnvVar(envVarDef, env)) {
         nonePassed = false;
         break;
       }
@@ -150,50 +116,30 @@ function checkEnvVarGroup(
     results.push({
       type: "none",
       passed: nonePassed,
-      details: ["none found (as expected)"],
     });
   }
 
   // Check if all required conditions passed
-  const allConditionsPassed = results.every((result) => result.passed);
-
-  if (!allConditionsPassed) {
-    return null;
-  }
-
-  // Build description and value
-  const allDetails = results.flatMap((result) => result.details);
-  const description = `Environment variable group matched: ${results.map((r) => r.type).join(" + ")}`;
-
-  return {
-    type: "env_var",
-    description,
-    value: allDetails.join(", "),
-  };
+  return results.every((result) => result.passed);
 }
 
 /**
  * Run custom detectors for a provider
  */
-function runCustomDetectors(provider: ProviderConfig): DetectionEvidence[] {
-  if (!provider.customDetectors) return [];
-
-  const evidence: DetectionEvidence[] = [];
+function runCustomDetectors(provider: ProviderConfig): boolean {
+  if (!provider.customDetectors) return false;
 
   for (const detector of provider.customDetectors) {
     try {
       if (detector()) {
-        evidence.push({
-          type: "custom",
-          description: `Custom detector for ${provider.name} returned true`,
-        });
+        return true;
       }
     } catch (error) {
       // Ignore custom detector errors
     }
   }
 
-  return evidence;
+  return false;
 }
 
 /**
@@ -202,70 +148,80 @@ function runCustomDetectors(provider: ProviderConfig): DetectionEvidence[] {
 export function detectAgenticEnvironment(
   env: Record<string, string | undefined> = process.env,
 ): DetectionResult {
-  const allEvidence: Map<string, DetectionEvidence[]> = new Map();
-
-  // Test each provider
+  // Test each provider in order of specificity
   for (const provider of providers) {
-    const evidence: DetectionEvidence[] = [];
+    let hasMatch = false;
 
     // Check environment variables (legacy - treated as ANY)
     for (const envVar of provider.envVars) {
-      const envEvidence = checkEnvVar(envVar, env);
-      if (envEvidence) {
-        evidence.push(envEvidence);
+      if (checkEnvVar(envVar, env)) {
+        hasMatch = true;
+        break;
       }
+    }
+
+    // If we already have a match, return this provider
+    if (hasMatch) {
+      return {
+        isAgentic: true,
+        provider: provider.name,
+        type: provider.type,
+      };
     }
 
     // Check environment variable groups
     if (provider.envVarGroups) {
       for (const group of provider.envVarGroups) {
-        const groupEvidence = checkEnvVarGroup(group, env);
-        if (groupEvidence) {
-          evidence.push(groupEvidence);
+        if (checkEnvVarGroup(group, env)) {
+          hasMatch = true;
+          break;
         }
       }
+    }
+
+    // If we already have a match, return this provider
+    if (hasMatch) {
+      return {
+        isAgentic: true,
+        provider: provider.name,
+        type: provider.type,
+      };
     }
 
     // Check processes
     if (provider.processChecks) {
       for (const processName of provider.processChecks) {
-        const processEvidence = checkProcess(processName);
-        if (processEvidence) {
-          evidence.push(processEvidence);
+        if (checkProcess(processName)) {
+          hasMatch = true;
+          break;
         }
       }
     }
 
-    // Run custom detectors
-    evidence.push(...runCustomDetectors(provider));
+    // If we already have a match, return this provider
+    if (hasMatch) {
+      return {
+        isAgentic: true,
+        provider: provider.name,
+        type: provider.type,
+      };
+    }
 
-    if (evidence.length > 0) {
-      allEvidence.set(provider.name, evidence);
+    // Run custom detectors
+    if (runCustomDetectors(provider)) {
+      return {
+        isAgentic: true,
+        provider: provider.name,
+        type: provider.type,
+      };
     }
   }
 
-  // Find the first provider with evidence (order matters!)
-  let detectedProvider: ProviderConfig | null = null;
-  let detectedEvidence: DetectionEvidence[] = [];
-
-  for (const [providerName, evidence] of allEvidence) {
-    // Since providers are ordered by specificity, take the first match
-    detectedProvider = providers.find((p) => p.name === providerName) || null;
-    detectedEvidence = evidence;
-    break;
-  }
-
-  // Return results
+  // No provider detected
   return {
-    isAgentic: detectedProvider !== null,
-    provider: detectedProvider?.name || null,
-    type: detectedProvider?.type || null,
-    evidence: detectedEvidence,
-    metadata: {
-      totalProvidersChecked: providers.length,
-      providersWithEvidence: allEvidence.size,
-      detectionTimestamp: new Date().toISOString(),
-    },
+    isAgentic: false,
+    provider: null,
+    type: null,
   };
 }
 
