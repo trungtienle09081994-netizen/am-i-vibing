@@ -39,7 +39,8 @@ describe("detectAgenticEnvironment", () => {
     const result = detectAgenticEnvironment();
 
     expect(result.isAgentic).toBe(false);
-    expect(result.provider).toBeNull();
+    expect(result.id).toBeNull();
+    expect(result.name).toBeNull();
     expect(result.type).toBeNull();
   });
 
@@ -48,7 +49,8 @@ describe("detectAgenticEnvironment", () => {
     const result = detectAgenticEnvironment(testEnv);
 
     expect(result.isAgentic).toBe(true);
-    expect(result.provider).toBe("Claude Code");
+    expect(result.id).toBe("claude-code");
+    expect(result.name).toBe("Claude Code");
     expect(result.type).toBe("agent");
   });
 
@@ -57,7 +59,8 @@ describe("detectAgenticEnvironment", () => {
     const result = detectAgenticEnvironment(testEnv);
 
     expect(result.isAgentic).toBe(true);
-    expect(result.provider).toBe("Cursor");
+    expect(result.id).toBe("cursor");
+    expect(result.name).toBe("Cursor");
     expect(result.type).toBe("interactive");
   });
 
@@ -69,19 +72,20 @@ describe("detectAgenticEnvironment", () => {
     const result = detectAgenticEnvironment(testEnv);
 
     expect(result.isAgentic).toBe(true);
-    expect(result.provider).toBe("GitHub Copilot Agent");
+    expect(result.id).toBe("github-copilot-agent");
+    expect(result.name).toBe("VS Code Copilot");
     expect(result.type).toBe("agent");
   });
 
   it("should detect GitHub Copilot (interactive) environment", () => {
     const testEnv = {
-      TERM_PROGRAM: "vscode",
-      VSCODE_GIT_ASKPASS_NODE: "/some/path",
+      CURSOR_TRACE_ID: "trace-123",
     };
     const result = detectAgenticEnvironment(testEnv);
 
     expect(result.isAgentic).toBe(true);
-    expect(result.provider).toBe("GitHub Copilot");
+    expect(result.id).toBe("cursor");
+    expect(result.name).toBe("Cursor");
     expect(result.type).toBe("interactive");
   });
 
@@ -93,7 +97,8 @@ describe("detectAgenticEnvironment", () => {
     const result = detectAgenticEnvironment(testEnv);
 
     expect(result.isAgentic).toBe(true);
-    expect(result.provider).toBe("Cursor Agent");
+    expect(result.id).toBe("cursor-agent");
+    expect(result.name).toBe("Cursor Agent");
     expect(result.type).toBe("agent");
   });
 
@@ -102,7 +107,8 @@ describe("detectAgenticEnvironment", () => {
     const result = detectAgenticEnvironment(testEnv);
 
     expect(result.isAgentic).toBe(true);
-    expect(result.provider).toBe("Replit");
+    expect(result.id).toBe("replit");
+    expect(result.name).toBe("Replit");
     expect(result.type).toBe("agent");
   });
 
@@ -111,7 +117,8 @@ describe("detectAgenticEnvironment", () => {
     const result = detectAgenticEnvironment(testEnv);
 
     expect(result.isAgentic).toBe(true);
-    expect(result.provider).toBe("Aider");
+    expect(result.id).toBe("aider");
+    expect(result.name).toBe("Aider");
     expect(result.type).toBe("agent");
   });
 
@@ -123,7 +130,8 @@ describe("detectAgenticEnvironment", () => {
     const result = detectAgenticEnvironment(testEnv);
 
     expect(result.isAgentic).toBe(true);
-    expect(result.provider).toBe("Bolt.new Agent");
+    expect(result.id).toBe("bolt-agent");
+    expect(result.name).toBe("Bolt.new Agent");
     expect(result.type).toBe("agent");
   });
 
@@ -132,7 +140,8 @@ describe("detectAgenticEnvironment", () => {
     const result = detectAgenticEnvironment(testEnv);
 
     expect(result.isAgentic).toBe(true);
-    expect(result.provider).toBe("Bolt.new");
+    expect(result.id).toBe("bolt");
+    expect(result.name).toBe("Bolt.new");
     expect(result.type).toBe("interactive");
   });
 
@@ -144,7 +153,8 @@ describe("detectAgenticEnvironment", () => {
     const result = detectAgenticEnvironment(testEnv);
 
     expect(result.isAgentic).toBe(true);
-    expect(result.provider).toBe("Zed Agent");
+    expect(result.id).toBe("zed-agent");
+    expect(result.name).toBe("Zed Agent");
     expect(result.type).toBe("agent");
   });
 
@@ -153,7 +163,8 @@ describe("detectAgenticEnvironment", () => {
     const result = detectAgenticEnvironment(testEnv);
 
     expect(result.isAgentic).toBe(true);
-    expect(result.provider).toBe("Zed");
+    expect(result.id).toBe("zed");
+    expect(result.name).toBe("Zed");
     expect(result.type).toBe("interactive");
   });
 
@@ -172,14 +183,16 @@ describe("detectAgenticEnvironment", () => {
     };
     const result = detectAgenticEnvironment(agentEnv);
 
-    expect(result.provider).toBe("Cursor Agent");
+    expect(result.id).toBe("cursor-agent");
+    expect(result.name).toBe("Cursor Agent");
     expect(result.type).toBe("agent");
 
     // Test regular Cursor
     const interactiveEnv = { CURSOR_TRACE_ID: "cursor-trace-123" };
     const result2 = detectAgenticEnvironment(interactiveEnv);
 
-    expect(result2.provider).toBe("Cursor");
+    expect(result2.id).toBe("cursor");
+    expect(result2.name).toBe("Cursor");
     expect(result2.type).toBe("interactive");
   });
 
@@ -191,27 +204,21 @@ describe("detectAgenticEnvironment", () => {
     };
     const result = detectAgenticEnvironment(agentEnv);
 
-    expect(result.provider).toBe("Zed Agent");
+    expect(result.id).toBe("zed-agent");
+    expect(result.name).toBe("Zed Agent");
     expect(result.type).toBe("agent");
 
     // Test regular Zed
     const interactiveEnv = { TERM_PROGRAM: "zed" };
     const result2 = detectAgenticEnvironment(interactiveEnv);
 
-    expect(result2.provider).toBe("Zed");
+    expect(result2.id).toBe("zed");
+    expect(result2.name).toBe("Zed");
     expect(result2.type).toBe("interactive");
   });
 });
 
 describe("convenience functions", () => {
-  it("isProvider should correctly identify specific providers", () => {
-    const testEnv = { CLAUDECODE: "true" };
-
-    expect(isProvider("Claude Code", testEnv)).toBe(true);
-    expect(isProvider("Cursor", testEnv)).toBe(false);
-    expect(isProvider("NonExistent", testEnv)).toBe(false);
-  });
-
   it("isAgent should identify agent environments", () => {
     const agentEnv = { CLAUDECODE: "true" };
     expect(isAgent(agentEnv)).toBe(true);
@@ -231,8 +238,7 @@ describe("convenience functions", () => {
     expect(isInteractive(interactiveEnv)).toBe(true);
 
     const copilotEnv = {
-      TERM_PROGRAM: "vscode",
-      VSCODE_GIT_ASKPASS_NODE: "/path",
+      CURSOR_TRACE_ID: "trace-123",
     };
     expect(isInteractive(copilotEnv)).toBe(true);
   });

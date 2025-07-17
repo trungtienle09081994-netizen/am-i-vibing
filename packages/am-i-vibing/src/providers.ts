@@ -14,8 +14,7 @@ export const providers: ProviderConfig[] = [
     id: "cursor-agent",
     name: "Cursor Agent",
     type: "agent",
-    envVars: [],
-    envVarGroups: [
+    envVars: [
       {
         all: ["CURSOR_TRACE_ID", ["PAGER", "head -n 10000 | cat"]],
       },
@@ -31,8 +30,13 @@ export const providers: ProviderConfig[] = [
     id: "gemini-agent",
     name: "Gemini Agent",
     type: "agent",
-    envVars: [],
     processChecks: ["gemini"],
+  },
+  {
+    id: "codex",
+    name: "OpenAI Codex",
+    type: "agent",
+    processChecks: ["codex"],
   },
   {
     id: "replit",
@@ -51,8 +55,7 @@ export const providers: ProviderConfig[] = [
     id: "bolt-agent",
     name: "Bolt.new Agent",
     type: "agent",
-    envVars: [],
-    envVarGroups: [
+    envVars: [
       {
         all: [["SHELL", "/bin/jsh"], "npm_config_yes"],
       },
@@ -62,8 +65,7 @@ export const providers: ProviderConfig[] = [
     id: "bolt",
     name: "Bolt.new",
     type: "interactive",
-    envVars: [],
-    envVarGroups: [
+    envVars: [
       {
         all: [["SHELL", "/bin/jsh"]],
         none: ["npm_config_yes"],
@@ -74,8 +76,7 @@ export const providers: ProviderConfig[] = [
     id: "zed-agent",
     name: "Zed Agent",
     type: "agent",
-    envVars: [],
-    envVarGroups: [
+    envVars: [
       {
         all: [
           ["TERM_PROGRAM", "zed"],
@@ -88,8 +89,7 @@ export const providers: ProviderConfig[] = [
     id: "zed",
     name: "Zed",
     type: "interactive",
-    envVars: [],
-    envVarGroups: [
+    envVars: [
       {
         all: [["TERM_PROGRAM", "zed"]],
         none: [["PAGER", "cat"]],
@@ -100,8 +100,7 @@ export const providers: ProviderConfig[] = [
     id: "replit-assistant",
     name: "Replit Assistant",
     type: "agent",
-    envVars: [],
-    envVarGroups: [
+    envVars: [
       {
         all: ["REPL_ID", ["REPLIT_MODE", "assistant"]],
       },
@@ -111,8 +110,7 @@ export const providers: ProviderConfig[] = [
     id: "replit",
     name: "Replit",
     type: "interactive",
-    envVars: [],
-    envVarGroups: [
+    envVars: [
       {
         all: ["REPL_ID"],
         none: [["REPLIT_MODE", "assistant"]],
@@ -123,8 +121,7 @@ export const providers: ProviderConfig[] = [
     id: "github-copilot-agent",
     name: "VS Code Copilot",
     type: "agent",
-    envVars: [],
-    envVarGroups: [
+    envVars: [
       {
         all: [
           ["TERM_PROGRAM", "vscode"],
