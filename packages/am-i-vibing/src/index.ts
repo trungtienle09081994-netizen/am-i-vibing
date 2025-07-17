@@ -3,31 +3,26 @@
  */
 
 // Export types
-export type { 
-  AgenticType, 
-  ProviderConfig, 
-  DetectionEvidence, 
-  DetectionResult 
-} from './types.js';
+export type {
+  AgenticType,
+  ProviderConfig,
+  DetectionEvidence,
+  DetectionResult,
+} from "./types.js";
 
 // Export providers
-export { 
-  providers, 
-  getProvider, 
-  getProvidersByType 
-} from './providers.js';
+export { providers, getProvider, getProvidersByType } from "./providers.js";
 
 // Export detection functions
-export { 
+export {
   detectAgenticEnvironment,
   isProvider,
-  isDirectAgent,
-  isEmbeddedAgent,
-  getCapabilities
-} from './detector.js';
+  isAgent,
+  isInteractive,
+} from "./detector.js";
 
 // Import for default export
-import { detectAgenticEnvironment } from './detector.js';
+import { detectAgenticEnvironment } from "./detector.js";
 
 // Convenience export for the main function
 export default detectAgenticEnvironment;

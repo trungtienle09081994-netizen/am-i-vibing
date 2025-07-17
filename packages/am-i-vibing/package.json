@@ -15,7 +15,8 @@
 		"dev": "tsup src/index.ts --format esm --dts --watch",
 		"prepublishOnly": "node --run build",
 		"check": "publint && attw $(pnpm pack) --ignore-rules=cjs-resolves-to-esm",
-		"test": "vitest"
+		"test": "vitest",
+		"whoami": "tsx scripts/whoami.ts"
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.18.2",
@@ -31,7 +32,14 @@
 		"directory": "packages/am-i-vibing"
 	},
 	"homepage": "https://github.com/matt/am-i-vibing",
-	"keywords": ["ai", "agentic", "coding", "detection", "llm", "assistant"],
+	"keywords": [
+		"ai",
+		"agentic",
+		"coding",
+		"detection",
+		"llm",
+		"assistant"
+	],
 	"author": "Matt Kane",
 	"license": "MIT"
 }
