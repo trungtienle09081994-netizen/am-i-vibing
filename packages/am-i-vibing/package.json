@@ -1,45 +1,48 @@
 {
-	"name": "am-i-vibing",
-	"version": "0.0.0",
-	"description": "Detect agentic coding environments and AI assistant tools",
-	"type": "module",
-	"main": "dist/index.js",
-	"files": [
-		"dist"
-	],
-	"exports": {
-		".": "./dist/index.js"
-	},
-	"scripts": {
-		"build": "tsup src/index.ts --format esm --dts --clean",
-		"dev": "tsup src/index.ts --format esm --dts --watch",
-		"prepublishOnly": "node --run build",
-		"check": "publint && attw $(pnpm pack) --ignore-rules=cjs-resolves-to-esm",
-		"test": "vitest",
-		"whoami": "tsx scripts/whoami.ts"
-	},
-	"devDependencies": {
-		"@arethetypeswrong/cli": "^0.18.2",
-		"@types/node": "^20.0.0",
-		"publint": "^0.3.12",
-		"tsup": "^8.5.0",
-		"typescript": "^5.8.3",
-		"vitest": "^2.0.0"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+github.com:matt/am-i-vibing.git",
-		"directory": "packages/am-i-vibing"
-	},
-	"homepage": "https://github.com/matt/am-i-vibing",
-	"keywords": [
-		"ai",
-		"agentic",
-		"coding",
-		"detection",
-		"llm",
-		"assistant"
-	],
-	"author": "Matt Kane",
-	"license": "MIT"
+  "name": "am-i-vibing",
+  "version": "0.0.0",
+  "description": "Detect agentic coding environments and AI assistant tools",
+  "type": "module",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "dev": "tsup src/index.ts --format esm --dts --watch",
+    "prepublishOnly": "node --run build",
+    "check": "publint && attw $(pnpm pack) --ignore-rules=cjs-resolves-to-esm",
+    "test": "vitest",
+    "whoami": "tsx scripts/whoami.ts"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.2",
+    "@types/node": "^20.0.0",
+    "publint": "^0.3.12",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "vitest": "^2.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+github.com:matt/am-i-vibing.git",
+    "directory": "packages/am-i-vibing"
+  },
+  "homepage": "https://github.com/matt/am-i-vibing",
+  "keywords": [
+    "ai",
+    "agentic",
+    "coding",
+    "detection",
+    "llm",
+    "assistant"
+  ],
+  "author": "Matt Kane",
+  "license": "MIT",
+  "dependencies": {
+    "process-ancestry": "^0.0.1"
+  }
 }

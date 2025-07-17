@@ -5,6 +5,7 @@ import type {
   EnvVarGroup,
 } from "./types.js";
 import { providers } from "./providers.js";
+import getProcessAncestry from "process-ancestry";
 
 /**
  * Check if a specific environment variable exists (handles both strings and tuples)
@@ -44,14 +45,22 @@ function checkEnvVar(
  */
 function checkProcess(processName: string): boolean {
   try {
-    // Simple process check - in a real implementation, you'd want to
-    // traverse the process tree more thoroughly
+    // Check the current process first
     if (
       process.argv0?.includes(processName) ||
       process.title?.includes(processName) ||
       process.env.npm_lifecycle_script?.includes(processName)
     ) {
       return true;
+    }
+
+    // Use process-ancestry to check the process tree
+    const ancestry = getProcessAncestry();
+    console.log("Process ancestry:", ancestry);
+    for (const ancestorProcess of ancestry) {
+      if (ancestorProcess.command?.includes(processName)) {
+        return true;
+      }
     }
   } catch (error) {
     // Ignore process check errors
@@ -150,61 +159,40 @@ export function detectAgenticEnvironment(
 ): DetectionResult {
   // Test each provider in order of specificity
   for (const provider of providers) {
-    let hasMatch = false;
-
     // Check environment variables (legacy - treated as ANY)
     for (const envVar of provider.envVars) {
       if (checkEnvVar(envVar, env)) {
-        hasMatch = true;
-        break;
+        return {
+          isAgentic: true,
+          provider: provider.name,
+          type: provider.type,
+        };
       }
     }
-
-    // If we already have a match, return this provider
-    if (hasMatch) {
-      return {
-        isAgentic: true,
-        provider: provider.name,
-        type: provider.type,
-      };
-    }
-
     // Check environment variable groups
     if (provider.envVarGroups) {
       for (const group of provider.envVarGroups) {
         if (checkEnvVarGroup(group, env)) {
-          hasMatch = true;
-          break;
+          return {
+            isAgentic: true,
+            provider: provider.name,
+            type: provider.type,
+          };
         }
       }
-    }
-
-    // If we already have a match, return this provider
-    if (hasMatch) {
-      return {
-        isAgentic: true,
-        provider: provider.name,
-        type: provider.type,
-      };
     }
 
     // Check processes
     if (provider.processChecks) {
       for (const processName of provider.processChecks) {
         if (checkProcess(processName)) {
-          hasMatch = true;
-          break;
+          return {
+            isAgentic: true,
+            provider: provider.name,
+            type: provider.type,
+          };
         }
       }
-    }
-
-    // If we already have a match, return this provider
-    if (hasMatch) {
-      return {
-        isAgentic: true,
-        provider: provider.name,
-        type: provider.type,
-      };
     }
 
     // Run custom detectors

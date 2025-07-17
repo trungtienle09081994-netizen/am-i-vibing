@@ -54,6 +54,14 @@ export const providers: ProviderConfig[] = [
     ],
   },
   {
+    id: "gemini-agent",
+    name: "Gemini Agent",
+    type: "agent",
+    envVars: [],
+    processChecks: ["gemini"],
+  },
+
+  {
     id: "replit",
     name: "Replit",
     type: "agent",

@@ -1,4 +1,4 @@
-import detectAgenticEnvironment from "../src/index.js";
+import { detectAgenticEnvironment } from "../src/index.js";
 
 const result = detectAgenticEnvironment();
 console.log("Detected Agentic Environment:");

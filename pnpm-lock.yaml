@@ -35,6 +35,10 @@ importers:
         version: link:../..
 
   packages/am-i-vibing:
+    dependencies:
+      process-ancestry:
+        specifier: ^0.0.1
+        version: 0.0.1
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: ^0.18.2
@@ -1207,6 +1211,10 @@ packages:
     resolution: {integrity: sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==}
     engines: {node: '>=14'}
     hasBin: true
+
+  process-ancestry@0.0.1:
+    resolution: {integrity: sha512-HnZ1kXghaJ4b8FkKJbmDaVNUQdHMHamEwOEc9N7pIRN4gXJ3TWPfYEE91oLs23+/EkcsIs6CVDnk3ZOGohrjlA==}
+    engines: {node: '>=18.0.0'}
 
   publint@0.3.12:
     resolution: {integrity: sha512-1w3MMtL9iotBjm1mmXtG3Nk06wnq9UhGNRpQ2j6n1Zq7YAD6gnxMMZMIxlRPAydVjVbjSm+n0lhwqsD1m4LD5w==}
@@ -2637,6 +2645,8 @@ snapshots:
   prettier@2.8.8: {}
 
   prettier@3.6.2: {}
+
+  process-ancestry@0.0.1: {}
 
   publint@0.3.12:
     dependencies:
