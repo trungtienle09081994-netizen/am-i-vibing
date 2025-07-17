@@ -6,7 +6,8 @@
 	"scripts": {
 		"check": "pnpm run --filter am-i-vibing check",
 		"test": "pnpm run --filter am-i-vibing test",
-		"build": "pnpm run --filter am-i-vibing build"
+		"build": "pnpm run --filter am-i-vibing build",
+		"whoami": "pnpm run --filter am-i-vibing whoami"
 	},
 	"keywords": [],
 	"author": "Matt Kane",
