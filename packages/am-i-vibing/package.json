@@ -1,7 +1,7 @@
 {
-	"name": "@ascorbic/example",
+	"name": "am-i-vibing",
 	"version": "0.0.0",
-	"description": "",
+	"description": "Detect agentic coding environments and AI assistant tools",
 	"type": "module",
 	"main": "dist/index.js",
 	"files": [
@@ -19,18 +19,19 @@
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.18.2",
-		"@types/feedparser": "^2.2.8",
+		"@types/node": "^20.0.0",
 		"publint": "^0.3.12",
 		"tsup": "^8.5.0",
-		"typescript": "^5.8.3"
+		"typescript": "^5.8.3",
+		"vitest": "^2.0.0"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+github.com:ascorbic/library-template.git",
-		"directory": "packages/example"
+		"url": "git+github.com:matt/am-i-vibing.git",
+		"directory": "packages/am-i-vibing"
 	},
-	"homepage": "https://github.com/ascorbic/library-template",
-	"keywords": [],
+	"homepage": "https://github.com/matt/am-i-vibing",
+	"keywords": ["ai", "agentic", "coding", "detection", "llm", "assistant"],
 	"author": "Matt Kane",
 	"license": "MIT"
 }
