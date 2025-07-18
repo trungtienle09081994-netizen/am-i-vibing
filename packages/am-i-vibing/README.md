@@ -18,7 +18,6 @@ npx am-i-vibing
 
 ## Supported AI Tools
 
-- **Jules**
 - **Claude Code**
 - **GitHub Copilot Agent**
 - **Replit AI**
@@ -28,6 +27,7 @@ npx am-i-vibing
 - **Windsurf/Codeium**
 - **Zed**
 - **Warp**
+- **Jules**
 
 ## CLI Usage
 
