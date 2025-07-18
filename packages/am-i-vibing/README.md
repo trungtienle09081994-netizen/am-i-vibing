@@ -18,6 +18,7 @@ npx am-i-vibing
 
 ## Supported AI Tools
 
+- **Jules**
 - **Claude Code**
 - **GitHub Copilot Agent**
 - **Replit AI**
