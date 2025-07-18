@@ -18,27 +18,18 @@ npx am-i-vibing
 
 ## Supported AI Tools
 
-### Direct Agents (Full CLI control)
-
-- **Claude Code**
-- **Cursor Agent**
-- **Replit Assistant**
 - **Aider**
-- **Bolt.new Agent**
-- **Zed Agent**
-- **Windsurf**
-- **GitHub Copilot in VS Code**
-- **Gemini Agent**
-- **OpenAI Codex**
-
-### Interactive IDE Features
-
+- **Bolt**
+- **Claude Code**
 - **Cursor**
-- **Replit**
-- **Bolt.new**
-- **Zed**
-- **Warp**
+- **Gemini CLI**
+- **GitHub Copilot Agent**
 - **Jules**
+- **Codex CLI**
+- **Replit**
+- **Warp**
+- **Windsurf**
+- **Zed**
 
 ## CLI Usage
 
