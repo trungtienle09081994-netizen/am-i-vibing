@@ -1,5 +1,11 @@
 # am-i-vibing
 
+## 0.0.3
+
+### Patch Changes
+
+- [#12](https://github.com/ascorbic/am-i-vibing/pull/12) [`42a7515`](https://github.com/ascorbic/am-i-vibing/commit/42a751583c6ce6d7f014dc4ef55138f932eae1b5) Thanks [@ascorbic](https://github.com/ascorbic)! - feat: Add detection for Jules agent
+
 ## 0.0.2
 
 ### Patch Changes
