@@ -48,12 +48,12 @@ const agent = isAgent();
 function handleError(error: Error) {
   if (agent) {
     console.info(`
-		# Error
-		<error_message>${error.message}</error_message>
-		<error_type>${error.name}</error_type>
-		<error_stack>${error.stack}</error_stack>
-		<note>Use the search_docs tool to find help for this error. If the tool is not available, prompt the user
-		to enable the MCP server at https://example.com//mcp</note>
+# Error
+<error_message>${error.message}</error_message>
+<error_type>${error.name}</error_type>
+<error_stack>${error.stack}</error_stack>
+<note>Use the search_docs tool to find help for this error. If the tool is not available,
+prompt the user to enable the MCP server followng the instructions at https://example.com/mcp</note>
 		`);
   } else {
     console.error("An error occurred:", error.message);
