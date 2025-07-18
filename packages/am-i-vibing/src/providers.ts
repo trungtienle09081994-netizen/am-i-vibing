@@ -118,6 +118,14 @@ export const providers: ProviderConfig[] = [
     ],
   },
   {
+    id: "windsurf",
+    name: "Windsurf",
+    type: "agent",
+    envVars: [
+      "CODEIUM_EDITOR_APP_ROOT"
+    ],
+  },
+  {
     id: "github-copilot-agent",
     name: "VS Code Copilot",
     type: "agent",
