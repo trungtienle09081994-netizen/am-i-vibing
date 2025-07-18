@@ -1,45 +1,77 @@
 #!/usr/bin/env node
 
+import { parseArgs } from "node:util";
+import { getProcessAncestry } from "process-ancestry";
 import {
   detectAgenticEnvironment,
   isAgent,
   isInteractive,
+  isHybrid,
 } from "./detector.js";
 
 interface CliOptions {
   format?: "json" | "text";
-  check?: "agent" | "interactive";
+  check?: "agent" | "interactive" | "hybrid";
   quiet?: boolean;
   help?: boolean;
+  debug?: boolean;
 }
 
-function parseArgs(args: string[]): CliOptions {
-  const options: CliOptions = {};
+function parseCliArgs(): CliOptions {
+  const { values } = parseArgs({
+    args: process.argv.slice(2),
+    options: {
+      format: {
+        type: "string",
+        short: "f",
+        default: "text",
+      },
+      check: {
+        type: "string",
+        short: "c",
+      },
+      quiet: {
+        type: "boolean",
+        short: "q",
+        default: false,
+      },
+      help: {
+        type: "boolean",
+        short: "h",
+        default: false,
+      },
+      debug: {
+        type: "boolean",
+        short: "d",
+        default: false,
+      },
+    },
+    allowPositionals: false,
+  });
 
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-
-    switch (arg) {
-      case "--format":
-      case "-f":
-        options.format = args[++i] as "json" | "text";
-        break;
-      case "--check":
-      case "-c":
-        options.check = args[++i] as "agent" | "interactive";
-        break;
-      case "--quiet":
-      case "-q":
-        options.quiet = true;
-        break;
-      case "--help":
-      case "-h":
-        options.help = true;
-        break;
-    }
+  // Validate format option
+  if (values.format && !["json", "text"].includes(values.format)) {
+    console.error(
+      `Error: Invalid format '${values.format}'. Must be 'json' or 'text'.`,
+    );
+    process.exit(1);
   }
 
-  return options;
+  // Validate check option
+  if (values.check && !["agent", "interactive", "hybrid"].includes(values.check)) {
+    console.error(
+      `Error: Invalid check type '${values.check}'. Must be 'agent', 'interactive', or 'hybrid'.`,
+    );
+    process.exit(1);
+  }
+
+  return {
+    format: values.format as "json" | "text",
+    check: values.check as "agent" | "interactive" | "hybrid",
+    quiet: values.quiet,
+    help: values.help,
+    debug: values.debug,
+  };
 }
 
 function showHelp(): void {
@@ -51,15 +83,18 @@ USAGE:
 
 OPTIONS:
   -f, --format <json|text>     Output format (default: text)
-  -c, --check <agent|interactive>  Check for specific environment type
+  -c, --check <agent|interactive|hybrid>  Check for specific environment type
   -q, --quiet                  Only output result, no labels
+  -d, --debug                  Debug output with environment and process info
   -h, --help                   Show this help message
 
 EXAMPLES:
   npx am-i-vibing                    # Detect current environment
-  npx am-i-vibing --format json     # JSON output
-  npx am-i-vibing --check agent     # Check if running under agent
+  npx am-i-vibing --format json      # JSON output
+  npx am-i-vibing --check agent      # Check if running under agent
+  npx am-i-vibing --check hybrid     # Check if running under hybrid
   npx am-i-vibing --quiet            # Minimal output
+  npx am-i-vibing --debug            # Debug with full environment info
 
 EXIT CODES:
   0  Agentic environment detected (or specific check passed)
@@ -67,23 +102,52 @@ EXIT CODES:
 `);
 }
 
+function checkEnvironmentType(checkType: string): boolean {
+  switch (checkType) {
+    case "agent":
+      return isAgent();
+    case "interactive":
+      return isInteractive();
+    case "hybrid":
+      return isHybrid();
+    default:
+      return false;
+  }
+}
+
 function formatOutput(
   result: ReturnType<typeof detectAgenticEnvironment>,
   options: CliOptions,
 ): string {
+  if (options.debug) {
+    let processAncestry: any[] = [];
+    try {
+      processAncestry = getProcessAncestry();
+    } catch (error) {
+      processAncestry = [{ error: "Failed to get process ancestry" }];
+    }
+
+    const debugOutput = {
+      detection: result,
+      environment: process.env,
+      processAncestry,
+    };
+    return JSON.stringify(debugOutput, null, 2);
+  }
+
   if (options.format === "json") {
     return JSON.stringify(result, null, 2);
   }
 
   if (options.quiet) {
     if (options.check) {
-      return result.type === options.check ? "true" : "false";
+      return checkEnvironmentType(options.check) ? "true" : "false";
     }
     return result.isAgentic ? `${result.name}` : "none";
   }
 
   if (options.check) {
-    const matches = result.type === options.check;
+    const matches = checkEnvironmentType(options.check);
     return matches
       ? `✓ Running in ${options.check} environment: ${result.name}`
       : `✗ Not running in ${options.check} environment`;
@@ -93,31 +157,23 @@ function formatOutput(
     return "✗ No agentic environment detected";
   }
 
-  return `✓ Detected: ${result.name} (${result.type})`;
+  return `✓ Detected: [${result.id}] ${result.name} (${result.type})`;
 }
 
 function main(): void {
-  const args = process.argv.slice(2);
-  const options = parseArgs(args);
+  const options = parseCliArgs();
 
   if (options.help) {
     showHelp();
     process.exit(0);
   }
 
-  let result;
+  const result = detectAgenticEnvironment();
   let exitCode = 1;
 
-  if (options.check === "agent") {
-    const isAgentEnv = isAgent();
-    result = detectAgenticEnvironment();
-    exitCode = isAgentEnv ? 0 : 1;
-  } else if (options.check === "interactive") {
-    const isInteractiveEnv = isInteractive();
-    result = detectAgenticEnvironment();
-    exitCode = isInteractiveEnv ? 0 : 1;
+  if (options.check) {
+    exitCode = checkEnvironmentType(options.check) ? 0 : 1;
   } else {
-    result = detectAgenticEnvironment();
     exitCode = result.isAgentic ? 0 : 1;
   }
 

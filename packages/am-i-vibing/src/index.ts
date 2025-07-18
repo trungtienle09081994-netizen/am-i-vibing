@@ -13,6 +13,7 @@ export {
   detectAgenticEnvironment,
   isAgent,
   isInteractive,
+  isHybrid,
 } from "./detector.js";
 
 // Import for default export

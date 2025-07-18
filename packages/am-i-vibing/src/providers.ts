@@ -121,19 +121,29 @@ export const providers: ProviderConfig[] = [
     id: "windsurf",
     name: "Windsurf",
     type: "agent",
-    envVars: [
-      "CODEIUM_EDITOR_APP_ROOT"
-    ],
+    envVars: ["CODEIUM_EDITOR_APP_ROOT"],
   },
   {
-    id: "github-copilot-agent",
-    name: "VS Code Copilot",
+    id: "vscode-copilot-agent",
+    name: "GitHub Copilot in VS Code",
     type: "agent",
     envVars: [
       {
         all: [
           ["TERM_PROGRAM", "vscode"],
           ["GIT_PAGER", "cat"],
+        ],
+      },
+    ],
+  },
+  {
+    id: "warp",
+    name: "Warp Terminal",
+    type: "hybrid",
+    envVars: [
+      {
+        all: [
+          ["TERM_PROGRAM", "WarpTerminal"],
         ],
       },
     ],
@@ -151,7 +161,7 @@ export function getProvider(name: string): ProviderConfig | undefined {
  * Get all providers of a specific type
  */
 export function getProvidersByType(
-  type: "agent" | "interactive",
+  type: "agent" | "interactive" | "hybrid",
 ): ProviderConfig[] {
   return providers.filter((p) => p.type === type);
 }
