@@ -49,11 +49,8 @@ jobs:
           timeout_minutes: "60"
           allowed_tools: |
             Bash(pnpm install)
-            Bash(pnpm run build)
-            Bash(pnpm run test)
-            Bash(pnpm run check)
-            Bash(pnpm run whoami)
-            Bash(npx am-i-vibing)
+            Bash(pnpm run *)
+            Bash(npx packages/am-i-vibing)
           # Optional: Restrict network access to specific domains only
           # experimental_allowed_domains: |
           #   .anthropic.com
