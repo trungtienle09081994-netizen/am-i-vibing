@@ -41,7 +41,7 @@ console.log(`Detected: ${result.name} (${result.type})`);
 
 Generating LLM-specific error messages or logs:
 
-````typescript
+```typescript
 import { isAgent } from "am-i-vibing";
 const agent = isAgent();
 
@@ -101,7 +101,7 @@ if (isHybrid()) {
 }
 
 // Note: Hybrid environments return true for both isAgent() and isInteractive()
-````
+```
 
 ## Detection Result
 
