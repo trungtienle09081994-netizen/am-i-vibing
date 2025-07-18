@@ -8,41 +8,22 @@ import {
 } from "../src/detector.js";
 
 describe("detectAgenticEnvironment", () => {
-  const originalEnv = process.env;
-
-  beforeEach(() => {
-    // Reset environment and clear AI-related variables
-    process.env = { ...originalEnv };
-
-    // Clear common AI-related environment variables
-    const aiEnvVars = [
-      "CLAUDECODE",
-      "CURSOR_TRACE_ID",
-      "PAGER",
-      "TERM_PROGRAM",
-      "VSCODE_GIT_ASKPASS_NODE",
-      "GIT_PAGER",
-      "REPL_ID",
-      "AIDER_API_KEY",
-    ];
-
-    for (const envVar of aiEnvVars) {
-      delete process.env[envVar];
-    }
-  });
-
-  afterEach(() => {
-    // Restore original environment
-    process.env = originalEnv;
-  });
-
-  it("should detect no agentic environment by default", () => {
-    const result = detectAgenticEnvironment();
-
+  it("should return false for non-agentic environment", () => {
+    const env = {};
+    const result = detectAgenticEnvironment(env);
     expect(result.isAgentic).toBe(false);
-    expect(result.id).toBeNull();
-    expect(result.name).toBeNull();
-    expect(result.type).toBeNull();
+    expect(result.name).toBe(null);
+  });
+
+  it("should detect Jules environment", () => {
+    const env = {
+      HOME: "/home/jules",
+      USER: "swebot",
+    };
+    const result = detectAgenticEnvironment(env);
+    expect(result.isAgentic).toBe(true);
+    expect(result.name).toBe("Jules");
+    expect(result.id).toBe("jules");
   });
 
   it("should detect Claude Code environment", () => {

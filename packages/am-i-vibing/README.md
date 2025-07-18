@@ -27,6 +27,7 @@ npx am-i-vibing
 - **Windsurf/Codeium**
 - **Zed**
 - **Warp**
+- **Jules**
 
 ## CLI Usage
 
