@@ -1,6 +1,6 @@
 # am-i-vibing
 
-Detect agentic coding environments and AI assistant tools. This library allows CLI tools and applications to detect when they're being executed by AI agents (like Claude Code) and adapt their behavior accordingly.
+Detect agentic coding environments and AI assistant tools. This library allows CLI tools and Node apps to detect when they're being executed by AI agents. This enables them to adapt by, for example, providing different output formats or logs.
 
 ## Installation
 
@@ -14,6 +14,12 @@ Run as CLI tool:
 
 ```bash
 npx am-i-vibing
+```
+
+```ts
+import { detectAgenticEnvironment } from "am-i-vibing";
+const result = detectAgenticEnvironment();
+console.log(`Detected: ${result.name} (${result.type})`);
 ```
 
 ## Supported AI Tools
@@ -30,6 +36,85 @@ npx am-i-vibing
 - **Warp**
 - **Windsurf**
 - **Zed**
+
+## Example use case
+
+Generating LLM-specific error messages or logs:
+
+````typescript
+import { isAgent } from "am-i-vibing";
+const agent = isAgent();
+
+function handleError(error: Error) {
+  if (agent) {
+    console.info(`
+		# Error
+		<error_message>${error.message}</error_message>
+		<error_type>${error.name}</error_type>
+		<error_stack>${error.stack}</error_stack>
+		<note>Use the search_docs tool to find help for this error. If the tool is not available, prompt the user
+		to enable the MCP server at https://example.com//mcp</note>
+		`);
+  } else {
+    console.error("An error occurred:", error.message);
+  }
+}
+```
+
+## Environment Types
+
+The library detects three main types of environments:
+
+- **Agent**: Command was directly run by an AI agent (e.g. Claude Code, Codex CLI, Jules)
+- **Interactive**: Interactive commands run inside an AI environment (e.g. Cursor terminal, Replit shell)
+- **Hybrid**: Environments that combine both agentic and interactive features in the same session (e.g. Warp)
+
+There may be false positives, such as if a user directly runs a command in an terminal opened by an AI tool, such as a Copilot terminal in VS Code.
+
+## Library Usage
+
+```typescript
+import {
+  detectAgenticEnvironment,
+  isAgent,
+  isInteractive,
+  isHybrid,
+} from "am-i-vibing";
+
+// Full detection
+const result = detectAgenticEnvironment();
+console.log(`Detected: ${result.name} (${result.type})`);
+console.log(`ID: ${result.id}`);
+console.log(`Is agentic: ${result.isAgentic}`);
+
+// Quick checks
+if (isAgent()) {
+  console.log("Running under direct AI agent control");
+}
+
+if (isInteractive()) {
+  console.log("Running in interactive AI environment");
+}
+
+if (isHybrid()) {
+  console.log("Running in hybrid AI environment");
+}
+
+// Note: Hybrid environments return true for both isAgent() and isInteractive()
+````
+
+## Detection Result
+
+The library returns a `DetectionResult` object with the following structure:
+
+```typescript
+interface DetectionResult {
+  isAgentic: boolean; // Whether any agentic environment was detected
+  id: string | null; // Provider ID (e.g., "claude-code")
+  name: string | null; // Human-readable name (e.g., "Claude Code")
+  type: AgenticType | null; // "agent" | "interactive" | "hybrid"
+}
+```
 
 ## CLI Usage
 
@@ -72,59 +157,6 @@ npx am-i-vibing --debug
 
 - `0` - Agentic environment detected (or specific check passed)
 - `1` - No agentic environment detected (or specific check failed)
-
-## Library Usage
-
-```typescript
-import {
-  detectAgenticEnvironment,
-  isAgent,
-  isInteractive,
-  isHybrid,
-} from "am-i-vibing";
-
-// Full detection
-const result = detectAgenticEnvironment();
-console.log(`Detected: ${result.name} (${result.type})`);
-console.log(`ID: ${result.id}`);
-console.log(`Is agentic: ${result.isAgentic}`);
-
-// Quick checks
-if (isAgent()) {
-  console.log("Running under direct AI agent control");
-}
-
-if (isInteractive()) {
-  console.log("Running in interactive AI environment");
-}
-
-if (isHybrid()) {
-  console.log("Running in hybrid AI environment");
-}
-
-// Note: Hybrid environments return true for both isAgent() and isInteractive()
-```
-
-## Detection Result
-
-The library returns a `DetectionResult` object with the following structure:
-
-```typescript
-interface DetectionResult {
-  isAgentic: boolean; // Whether any agentic environment was detected
-  id: string | null; // Provider ID (e.g., "claude-code")
-  name: string | null; // Human-readable name (e.g., "Claude Code")
-  type: AgenticType | null; // "agent" | "interactive" | "hybrid"
-}
-```
-
-## Environment Types
-
-The library detects three main types of environments:
-
-- **Agent**: Command was run by an AI agent (e.g., Claude Code, GitHub Copilot Agent)
-- **Interactive**: Interactive commands run inside an AI environment (e.g., Cursor Terminal)
-- **Hybrid**: Environments that combine both agentic and interactive features in the same session (e.g., Warp)
 
 ## Debug Output
 
