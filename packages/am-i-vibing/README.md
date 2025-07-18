@@ -4,9 +4,29 @@ Detect agentic coding environments and AI assistant tools. This library allows C
 
 ## Installation
 
+Install as library:
+
 ```bash
 npm install am-i-vibing
 ```
+
+Run as CLI tool:
+
+```bash
+npx am-i-vibing
+```
+
+## Supported AI Tools
+
+- **Claude Code**
+- **GitHub Copilot Agent**
+- **Replit AI**
+- **Aider**
+- **Bolt.new**
+- **Cursor**
+- **Windsurf/Codeium**
+- **Zed**
+- **Warp**
 
 ## CLI Usage
 
@@ -31,13 +51,18 @@ npx am-i-vibing --check interactive
 # Quiet mode (useful for scripts)
 npx am-i-vibing --quiet
 # Claude Code
+
+# Debug mode (full diagnostic output)
+npx am-i-vibing --debug
+# {"detection": {"isAgentic": true, "id": "claude-code", "name": "Claude Code", "type": "agent"}, "environment": {...}, "processAncestry": [...]}
 ```
 
 ### CLI Options
 
 - `-f, --format <json|text>` - Output format (default: text)
-- `-c, --check <agent|interactive>` - Check for specific environment type
+- `-c, --check <agent|interactive|hybrid>` - Check for specific environment type
 - `-q, --quiet` - Only output result, no labels
+- `-d, --debug` - Debug output with environment and process info
 - `-h, --help` - Show help message
 
 ### Exit Codes
@@ -48,7 +73,12 @@ npx am-i-vibing --quiet
 ## Library Usage
 
 ```typescript
-import { detectAgenticEnvironment, isAgent, isInteractive } from 'am-i-vibing';
+import {
+  detectAgenticEnvironment,
+  isAgent,
+  isInteractive,
+  isHybrid,
+} from "am-i-vibing";
 
 // Full detection
 const result = detectAgenticEnvironment();
@@ -58,12 +88,18 @@ console.log(`Is agentic: ${result.isAgentic}`);
 
 // Quick checks
 if (isAgent()) {
-  console.log('Running under direct AI agent control');
+  console.log("Running under direct AI agent control");
 }
 
 if (isInteractive()) {
-  console.log('Running in interactive AI environment');
+  console.log("Running in interactive AI environment");
 }
+
+if (isHybrid()) {
+  console.log("Running in hybrid AI environment");
+}
+
+// Note: Hybrid environments return true for both isAgent() and isInteractive()
 ```
 
 ## Detection Result
@@ -72,47 +108,42 @@ The library returns a `DetectionResult` object with the following structure:
 
 ```typescript
 interface DetectionResult {
-  isAgentic: boolean;    // Whether any agentic environment was detected
-  id: string | null;     // Provider ID (e.g., "claude-code")
-  name: string | null;   // Human-readable name (e.g., "Claude Code")
+  isAgentic: boolean; // Whether any agentic environment was detected
+  id: string | null; // Provider ID (e.g., "claude-code")
+  name: string | null; // Human-readable name (e.g., "Claude Code")
   type: AgenticType | null; // "agent" | "interactive" | "hybrid"
 }
 ```
 
-## Supported AI Tools
-
-### Direct Agents (Full CLI control)
-- **Claude Code** - Anthropic's official CLI tool
-- **Replit AI** - Replit's AI assistant
-- **Aider** - AI pair programming tool
-- **Bolt.new** - AI-powered development environment
-
-### Embedded IDE Features
-- **Cursor** - AI-powered code editor
-- **GitHub Copilot** - AI code completion
-- **Windsurf/Codeium** - AI coding assistant
-- **Continue.dev** - Open-source AI code assistant
-- **Tabnine** - AI code completion
-- **Zed** - High-performance editor with AI features
-
 ## Environment Types
 
-- **Agent**: Full autonomous control over the terminal/CLI
-- **Interactive**: AI assistance within an IDE or editor environment
-- **Hybrid**: Tools that can operate in both modes
+The library detects three main types of environments:
 
-## Use Cases
+- **Agent**: Command was run by an AI agent (e.g., Claude Code, GitHub Copilot Agent)
+- **Interactive**: Interactive commands run inside an AI environment (e.g., Cursor Terminal)
+- **Hybrid**: Environments that combine both agentic and interactive features in the same session (e.g., Warp)
 
-- **CLI Tools**: Adapt behavior when running under AI control (e.g., provide more detailed output)
-- **Development Scripts**: Skip interactive prompts when detected as automated
-- **Testing**: Detect test environments vs. human usage
-- **Analytics**: Track usage patterns across different AI tools
-- **Documentation**: Generate context-aware help and examples
+## Debug Output
 
-## Contributing
+The `--debug` flag provides comprehensive diagnostic information including:
 
-This project uses a monorepo structure with pnpm workspaces. See the main repository for contribution guidelines.
+- **detection**: Standard detection result (same as `--format json`)
+- **environment**: Complete dump of `process.env` variables
+- **processAncestry**: Process tree showing parent processes up to the root
+
+This is useful for troubleshooting detection issues and understanding the runtime environment.
+
+```bash
+npx am-i-vibing --debug
+# {
+#   "detection": { ... },
+#   "environment": { ... },
+#   "processAncestry": [...]
+# }
+```
 
 ## License
 
 MIT
+
+Copyright © 2025 Matt Kane

@@ -4,6 +4,7 @@ import {
   isProvider,
   isAgent,
   isInteractive,
+  isHybrid,
 } from "../src/detector.js";
 
 describe("detectAgenticEnvironment", () => {
@@ -72,8 +73,8 @@ describe("detectAgenticEnvironment", () => {
     const result = detectAgenticEnvironment(testEnv);
 
     expect(result.isAgentic).toBe(true);
-    expect(result.id).toBe("github-copilot-agent");
-    expect(result.name).toBe("VS Code Copilot");
+    expect(result.id).toBe("vscode-copilot-agent");
+    expect(result.name).toBe("GitHub Copilot in VS Code");
     expect(result.type).toBe("agent");
   });
 
@@ -168,6 +169,16 @@ describe("detectAgenticEnvironment", () => {
     expect(result.type).toBe("interactive");
   });
 
+  it("should detect Warp hybrid environment", () => {
+    const testEnv = { TERM_PROGRAM: "WarpTerminal" };
+    const result = detectAgenticEnvironment(testEnv);
+
+    expect(result.isAgentic).toBe(true);
+    expect(result.id).toBe("warp");
+    expect(result.name).toBe("Warp Terminal");
+    expect(result.type).toBe("hybrid");
+  });
+
   it("should handle false positive scenarios", () => {
     const testEnv = { RANDOM_VARIABLE: "some-value" };
     const result = detectAgenticEnvironment(testEnv);
@@ -241,5 +252,16 @@ describe("convenience functions", () => {
       CURSOR_TRACE_ID: "trace-123",
     };
     expect(isInteractive(copilotEnv)).toBe(true);
+  });
+
+  it("isHybrid should identify hybrid environments", () => {
+    const hybridEnv = { TERM_PROGRAM: "WarpTerminal" };
+    expect(isHybrid(hybridEnv)).toBe(true);
+
+    const agentEnv = { CLAUDECODE: "true" };
+    expect(isHybrid(agentEnv)).toBe(false);
+
+    const interactiveEnv = { CURSOR_TRACE_ID: "trace-123" };
+    expect(isHybrid(interactiveEnv)).toBe(false);
   });
 });

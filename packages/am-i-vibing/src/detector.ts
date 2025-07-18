@@ -145,7 +145,7 @@ export function isAgent(
   env: Record<string, string | undefined> = process.env,
 ): boolean {
   const result = detectAgenticEnvironment(env);
-  return result.type === "agent";
+  return result.type === "agent" || result.type === "hybrid";
 }
 
 /**
@@ -155,5 +155,15 @@ export function isInteractive(
   env: Record<string, string | undefined> = process.env,
 ): boolean {
   const result = detectAgenticEnvironment(env);
-  return result.type === "interactive";
+  return result.type === "interactive" || result.type === "hybrid";
+}
+
+/**
+ * Check if currently running in any hybrid AI environment
+ */
+export function isHybrid(
+  env: Record<string, string | undefined> = process.env,
+): boolean {
+  const result = detectAgenticEnvironment(env);
+  return result.type === "hybrid";
 }
