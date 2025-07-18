@@ -29,12 +29,33 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
+
+      - name: Install dependencies
+        run: pnpm install
+
       - name: Run Claude PR Action
         uses: anthropics/claude-code-action@beta
         with:
           # Or use OAuth token instead:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           timeout_minutes: "60"
+          allowed_tools: |
+            Bash(pnpm install)
+            Bash(pnpm run build)
+            Bash(pnpm run test)
+            Bash(pnpm run check)
+            Bash(pnpm run whoami)
+            Bash(npx am-i-vibing)
           # Optional: Restrict network access to specific domains only
           # experimental_allowed_domains: |
           #   .anthropic.com
