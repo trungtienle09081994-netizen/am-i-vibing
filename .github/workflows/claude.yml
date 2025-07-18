@@ -49,7 +49,8 @@ jobs:
           timeout_minutes: "60"
           allowed_tools: |
             Bash(pnpm install)
-            Bash(pnpm run *)
+            Bash(pnpm run:*)
+            Bash(npm run:*)
             Bash(npx packages/am-i-vibing)
           # Optional: Restrict network access to specific domains only
           # experimental_allowed_domains: |
