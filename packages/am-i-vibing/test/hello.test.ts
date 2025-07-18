@@ -35,6 +35,12 @@ describe("providers", () => {
     expect(boltAgent?.type).toBe("agent");
   });
 
+  it("should include Warp hybrid provider", () => {
+    const warp = providers.find((p) => p.name === "Warp Terminal");
+    expect(warp).toBeDefined();
+    expect(warp?.type).toBe("hybrid");
+  });
+
   it("getProvider should return correct provider", () => {
     const claudeCode = getProvider("Claude Code");
     expect(claudeCode).toBeDefined();
@@ -47,13 +53,16 @@ describe("providers", () => {
   it("getProvidersByType should filter providers correctly", () => {
     const agentProviders = getProvidersByType("agent");
     const interactiveProviders = getProvidersByType("interactive");
+    const hybridProviders = getProvidersByType("hybrid");
 
     expect(agentProviders.length).toBeGreaterThan(0);
     expect(interactiveProviders.length).toBeGreaterThan(0);
+    expect(hybridProviders.length).toBeGreaterThan(0);
 
     expect(agentProviders.every((p) => p.type === "agent")).toBe(true);
     expect(interactiveProviders.every((p) => p.type === "interactive")).toBe(
       true,
     );
+    expect(hybridProviders.every((p) => p.type === "hybrid")).toBe(true);
   });
 });
