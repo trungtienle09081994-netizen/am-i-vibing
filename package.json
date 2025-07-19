@@ -19,6 +19,7 @@
     "@types/node": "^22.16.4",
     "prettier": "^3.6.2",
     "tsx": "^4.20.3",
+    "typescript": "^5.0.0",
     "vitest": "^3.2.4"
   },
   "packageManager": "pnpm@10.13.1",
