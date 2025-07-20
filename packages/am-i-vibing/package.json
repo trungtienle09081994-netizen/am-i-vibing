@@ -14,8 +14,8 @@
     ".": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsup src/index.ts src/cli.ts --format esm --dts --clean",
-    "dev": "tsup src/index.ts src/cli.ts --format esm --dts --watch",
+    "build": "tsdown src/index.ts src/cli.ts --format esm --dts --clean",
+    "dev": "tsdown src/index.ts src/cli.ts --format esm --dts --watch",
     "prepublishOnly": "node --run build",
     "check": "publint && attw --pack --ignore-rules=cjs-resolves-to-esm",
     "test": "vitest run",
@@ -25,7 +25,7 @@
     "@arethetypeswrong/cli": "^0.18.2",
     "@types/node": "^22.16.5",
     "publint": "^0.3.12",
-    "tsup": "^8.5.0",
+    "tsdown": "^0.12.9",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   },
