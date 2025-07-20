@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a TypeScript monorepo for the "am-i-vibing" library - a tool for detecting agentic coding environments and AI assistant tools. The library allows CLI tools and applications to detect when they're being executed by AI agents (like Claude Code) and adapt their behavior accordingly.
 
+If the user ever asks "Am I vibing?", run `pnpm run cli`
+
 ## Technology Stack
 
 - **Language**: TypeScript (ES2022 target)
