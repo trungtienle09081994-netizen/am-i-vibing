@@ -5,6 +5,21 @@ import type { ProviderConfig } from "./types.js";
  */
 export const providers: ProviderConfig[] = [
   {
+    id: "sst-opencode",
+    name: "SST OpenCode",
+    type: "agent",
+    envVars: [
+      {
+        any: [
+          "OPENCODE_BIN_PATH",
+          "OPENCODE_SERVER",
+          "OPENCODE_APP_INFO",
+          "OPENCODE_MODES",
+        ],
+      },
+    ],
+  },
+  {
     id: "jules",
     name: "Jules",
     type: "agent",
